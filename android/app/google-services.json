@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "24610033903",
+    "project_id": "twitterxclone-f82a1",
+    "storage_bucket": "twitterxclone-f82a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24610033903:android:4579f732b2e97ab760cb1a",
+        "android_client_info": {
+          "package_name": "app.nnsang.twitterxclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8o8n-FEBOOqnlWlnFcTlyCwTtNR3aq_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
