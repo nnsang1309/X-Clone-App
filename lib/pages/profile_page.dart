@@ -1,3 +1,5 @@
+import 'package:app/components/my_bio_box.dart';
+import 'package:app/components/my_input_alert_box.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:app/services/database/database_provider.dart';
@@ -33,6 +35,9 @@ class _ProfilePageState extends State<ProfilePage> {
   UserProfile? user;
   String currentUserId = AuthService().getCurrentUid();
 
+  // text controller for bio
+  final bioTextController = TextEditingController();
+
   // loading..
   bool _isLoading = true;
 
@@ -49,7 +54,38 @@ class _ProfilePageState extends State<ProfilePage> {
     // get the user profile info
     user = await databaseProvider.userProfile(widget.uid);
 
-    // finished loading..
+    // finished loading. .
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  // show edit bio box
+  void _showEditBioBox() {
+    showDialog(
+      context: context,
+      builder: (context) => MyInputAlertBox(
+          textController: bioTextController,
+          hintText: "Edit bio...",
+          onPressed: saveBio,
+          onPressedText: "Save"),
+    );
+  }
+
+  // save update bio
+  Future<void> saveBio() async {
+    // start loading..
+    setState(() {
+      _isLoading = true;
+    });
+
+    // update bio
+    await databaseProvider.updateBio(bioTextController.text);
+
+    // reload user
+    await loadUser();
+
+    // done loading
     setState(() {
       _isLoading = false;
     });
@@ -60,25 +96,76 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // SCAFFOLD
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       // APPBAR
       appBar: AppBar(
-        title: Text(_isLoading || user == null ? 'Null' : user!.email),
+        title: Text(_isLoading || user == null ? 'Null' : user!.name),
+        foregroundColor: Theme.of(context).colorScheme.primary,
       ),
 
       // BODY
-      body: ListView(
-          // user name handle
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: ListView(
+          children: [
+            // user name handle
+            Center(
+              child: Text(
+                _isLoading ? '' : '@${user!.username}',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
 
-          // profile picture
+            const SizedBox(height: 25),
+            // profile picture
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(21)),
+                padding: const EdgeInsets.all(25),
+                child: Icon(
+                  Icons.person,
+                  size: 72,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
 
-          // profile status -> number of posts / followers / following
+            const SizedBox(height: 25),
 
-          // follow / unfollow button
+            // profile status -> number of posts / followers / following
 
-          // bio box
+            // follow / unfollow button
 
-          // list of posts from user
-          ),
+            // edit bio
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Bio",
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                ),
+                GestureDetector(
+                  onTap: _showEditBioBox,
+                  child: Icon(
+                    Icons.settings,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 10),
+
+            // bio box
+            MyBioBox(text: _isLoading ? '...' : user!.bio),
+
+            // list of posts from user
+          ],
+        ),
+      ),
     );
   }
 }

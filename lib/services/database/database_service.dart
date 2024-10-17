@@ -15,6 +15,7 @@ This class handles all the data from and to firebase.
 */
 
 import 'package:app/models/user.dart';
+import 'package:app/services/auth/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -88,6 +89,19 @@ class DatabaseService {
     } catch (e) {
       print(e);
       return null;
+    }
+  }
+
+  //Update user bio
+  Future<void> updateUserBioInFirebase(String bio) async {
+    //get current uid
+    String uid = AuthService().getCurrentUid();
+
+    // update in firebase
+    try {
+      await _db.collection("Users").doc(uid).update({'bio': bio});
+    } catch (e) {
+      print(e);
     }
   }
 

@@ -12,7 +12,6 @@ This provider is to separete the firestore data handling and the Ui of our app.
  */
 
 import 'package:app/models/user.dart';
-import 'package:app/services/auth/auth_service.dart';
 import 'package:app/services/database/database_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -25,7 +24,6 @@ class DatabaseProvider extends ChangeNotifier {
 
   // get db & auth service
   final _db = DatabaseService();
-  final _auth = AuthService();
 
   /*
 
@@ -35,4 +33,7 @@ class DatabaseProvider extends ChangeNotifier {
 
   // get user profile given uid
   Future<UserProfile?> userProfile(String uid) => _db.getUserFromFirebase(uid);
+
+  // update user bio
+  Future<void> updateBio(String bio) => _db.updateUserBioInFirebase(bio);
 }
