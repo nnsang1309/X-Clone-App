@@ -37,8 +37,7 @@ class DatabaseService {
   */
 
   // Save user info
-  Future<void> saveUserInfoFirebase(
-      {required String name, required String email}) async {
+  Future<void> saveUserInfoFirebase({required String name, required String email}) async {
     try {
       // get current uid
       User? currentUser = _auth.currentUser;
@@ -148,18 +147,18 @@ class DatabaseService {
   Future<void> deletePostFromFirebase(String postId) async {
     try {
       await _db.collection("Posts").doc(postId).delete();
+      print("Post $postId deleted from Firebase.");
     } catch (e) {
       print(e);
+      throw e;
     }
   }
 
   // Get all posts
   Future<List<Post>> getAllPostFromFirebase() async {
     try {
-      QuerySnapshot snapshot = await _db
-          .collection("Posts")
-          .orderBy('timestamp', descending: true)
-          .get();
+      QuerySnapshot snapshot =
+          await _db.collection("Posts").orderBy('timestamp', descending: true).get();
 
       //
       return snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();

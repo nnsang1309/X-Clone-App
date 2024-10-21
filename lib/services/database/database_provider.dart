@@ -79,10 +79,16 @@ class DatabaseProvider extends ChangeNotifier {
 
   // delete post
   Future<void> deletePost(String postId) async {
-    // delete from firebase
-    await _db.deletePostFromFirebase(postId);
+    try {
+      // delete from firebase
+      await _db.deletePostFromFirebase(postId);
+      print("Post deleted success");
 
-    // reload data from firebase
-    await loadAllPosts();
+      // reload data from firebase
+      await loadAllPosts();
+      print("Posts reloaded.");
+    } catch (e) {
+      print("Failed to delete post: $e");
+    }
   }
 }

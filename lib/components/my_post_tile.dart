@@ -11,7 +11,10 @@ To use this widget
 */
 
 import 'package:app/models/post.dart';
+import 'package:app/services/auth/auth_service.dart';
+import 'package:app/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyPostTile extends StatefulWidget {
   final Post post;
@@ -30,7 +33,74 @@ class MyPostTile extends StatefulWidget {
 }
 
 class _MyPostTileState extends State<MyPostTile> {
-  void _showOptions() {}
+  // provider
+  late final listeningProvider = Provider.of<DatabaseProvider>(context);
+  late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
+  void _showOptions() {
+    // check if this post is owned bu the user ot not
+    String currentUid = AuthService().getCurrentUid();
+    final bool isOwnPost = widget.post.uid == currentUid;
+    // show options
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                // Bài viết thuộc sở hữu của User
+                if (isOwnPost)
+                  // delete button
+                  ListTile(
+                    leading: const Icon(Icons.delete),
+                    title: const Text("Delete"),
+                    onTap: () async {
+                      // pop option box
+                      Navigator.pop(context);
+
+                      // handle delete action
+                      await databaseProvider.deletePost(widget.post.id);
+                    },
+                  )
+
+                // Bài viết thuộc sở hữu của User khác
+                else ...[
+                  // report post button
+                  ListTile(
+                    leading: const Icon(Icons.flag),
+                    title: const Text("Report"),
+                    onTap: () {
+                      // pop option box
+                      Navigator.pop(context);
+
+                      // handle report action
+                    },
+                  ),
+
+                  // block user button
+                  ListTile(
+                    leading: const Icon(Icons.block),
+                    title: const Text("Block User"),
+                    onTap: () {
+                      // pop option box
+                      Navigator.pop(context);
+
+                      // handle block action
+                    },
+                  )
+                ],
+
+                // cannel button
+                ListTile(
+                  leading: const Icon(Icons.cancel),
+                  title: const Text("Cannel"),
+                  onTap: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   // BUILD UI
   @override
   Widget build(BuildContext context) {
