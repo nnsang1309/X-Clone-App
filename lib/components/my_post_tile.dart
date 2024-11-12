@@ -36,6 +36,21 @@ class _MyPostTileState extends State<MyPostTile> {
   // provider
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
   late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
+
+  /*
+  LIKE
+  */
+
+  // user tapped like (or unlike)
+  void _toggleLikePost() async {
+    try {
+      await databaseProvider.toggleLike(widget.post.id);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // show options for post
   void _showOptions() {
     // check if this post is owned bu the user ot not
     String currentUid = AuthService().getCurrentUid();
@@ -104,6 +119,13 @@ class _MyPostTileState extends State<MyPostTile> {
   // BUILD UI
   @override
   Widget build(BuildContext context) {
+    // does the current user like this post?
+    bool likeByCurrentUser = listeningProvider.isPostLikeByCurrentUser(widget.post.id);
+
+    // listen to like count
+    int likeCount = listeningProvider.getLikeCount(widget.post.id);
+
+    // Container
     return GestureDetector(
       onTap: widget.onPostTap,
       child: Container(
@@ -177,6 +199,35 @@ class _MyPostTileState extends State<MyPostTile> {
               style: TextStyle(
                 color: Theme.of(context).colorScheme.inversePrimary,
               ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // button -> like + comment
+            Row(
+              children: [
+                // like button
+                GestureDetector(
+                  onTap: _toggleLikePost,
+                  child: likeByCurrentUser
+                      ? const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        )
+                      : Icon(
+                          Icons.favorite_border,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                ),
+
+                const SizedBox(width: 5),
+
+                // like count
+                Text(
+                  likeCount != 0 ? likeCount.toString() : '',
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                ),
+              ],
             ),
           ],
         ),
