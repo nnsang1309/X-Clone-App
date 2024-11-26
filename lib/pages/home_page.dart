@@ -25,8 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // providers
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
-  late final databaseProvider =
-      Provider.of<DatabaseProvider>(context, listen: false);
+  late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
   // text controller
   final _messageControler = TextEditingController();
 
@@ -94,7 +93,7 @@ class _HomePageState extends State<HomePage> {
     return posts.isEmpty
         ?
         // post list is empty
-        Center(
+        const Center(
             child: Text("Nothing here..."),
           )
         :

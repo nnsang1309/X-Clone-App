@@ -21,7 +21,7 @@ class MyBioBox extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 25),
 
       //padding inside
-      padding: EdgeInsets.all(25),
+      padding: const EdgeInsets.all(25),
 
       decoration: BoxDecoration(
         //color

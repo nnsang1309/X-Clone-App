@@ -13,6 +13,7 @@ This provider is to separete the firestore data handling and the Ui of our app.
 
  */
 
+import 'package:app/models/comment.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:app/services/database/database_service.dart';
@@ -181,5 +182,53 @@ class DatabaseProvider extends ChangeNotifier {
       // update Ui again
       notifyListeners();
     }
+  }
+
+  /*
+
+  COMMENTS
+
+  {
+  postId1: [comment1, comment2, comment3,..],
+  postId2: [comment1, comment2, comment3,..],
+  postId3: [comment1, comment2, comment3,..],
+  }
+
+  */
+
+  // local list of comments
+  final Map<String, List<Comment>> _comments = {};
+
+  // get comments locally
+  List<Comment> getComments(String postId) => _comments[postId] ?? [];
+
+  // fetch comments from database for a post
+  Future<void> loadComments(String postId) async {
+    // get all comments for this post
+    final allComments = await _db.getCommentsFromFirebase(postId);
+
+    // update local data
+    _comments[postId] = allComments;
+
+    // update UI
+    notifyListeners();
+  }
+
+  // add a comment
+  Future<void> addComment(String postId, message) async {
+    // add comment in firebase
+    await _db.addCommnetInFirebase(postId, message);
+
+    // reload comments
+    await loadComments(postId);
+  }
+
+  // delete a comment
+  Future<void> deleteComment(String commentId, postId) async {
+    // delete comment in firebase
+    await _db.deleteCommentInFirebase(commentId);
+
+    // reload comments
+    await loadComments(postId);
   }
 }

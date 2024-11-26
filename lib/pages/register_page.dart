@@ -95,7 +95,7 @@ class _RegisterPage extends State<RegisterPage> {
     else {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) => const AlertDialog(
           title: Text("Password don't match!"),
         ),
       );

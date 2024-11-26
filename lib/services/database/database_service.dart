@@ -9,13 +9,14 @@ This class handles all the data from and to firebase.
 
   - User profile
   - Post message
-  Likes
+  - Likes
   - Commnets
   - Account stuff ( report / block / delete account )
   - Follow / unfollow
   - Search users
 */
 
+import 'package:app/models/comment.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -228,9 +229,60 @@ class DatabaseService {
   /*
   
   COMMENTS
-
   
   */
+
+  // Add a comment a post
+  Future<void> addCommnetInFirebase(String postId, message) async {
+    try {
+      // get current user
+      String uid = _auth.currentUser!.uid;
+      UserProfile? user = await getUserFromFirebase(uid);
+
+      // create a new comment
+      Comment newComment = Comment(
+        id: '', // firebase will auto generate this
+        postId: postId,
+        uid: uid,
+        name: user!.name,
+        username: user.username,
+        message: message,
+        timestamp: Timestamp.now(),
+      );
+
+      // convert comment to map
+      Map<String, dynamic> newCommentMap = newComment.toMap();
+
+      // to store in firebase
+      await _db.collection("Comments").add(newCommentMap);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // Delete a comment from a post
+  Future<void> deleteCommentInFirebase(String commentId) async {
+    try {
+      await _db.collection("Comments").doc(commentId).delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // Fetch comments for a post
+  Future<List<Comment>> getCommentsFromFirebase(String postId) async {
+    try {
+      // get comments fromm firebase
+      QuerySnapshot snapshot =
+          await _db.collection("Comments").where("postId", isEqualTo: postId).get();
+
+      // return as a list of comments
+      return snapshot.docs.map((doc) => Comment.fromDocument(doc)).toList();
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
 
   /*
   
