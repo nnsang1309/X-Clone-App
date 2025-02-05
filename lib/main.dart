@@ -34,6 +34,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const AuthGate(),
+      // initialRoute: '/',
+      // routes: {'/': (context) => const AuthGate()},
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }

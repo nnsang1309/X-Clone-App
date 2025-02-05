@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:app/components/my_button.dart';
 import 'package:app/components/my_loading_circle.dart';
 import 'package:app/services/auth/auth_service.dart';

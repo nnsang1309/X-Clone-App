@@ -1,3 +1,4 @@
+import 'package:app/services/database/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /*
@@ -42,12 +43,10 @@ class AuthService {
   }
 
   // register -> email & pw
-  Future<UserCredential> registerEmailPassword(
-      String email, String password) async {
+  Future<UserCredential> registerEmailPassword(String email, String password) async {
     // attempt to register new user
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -66,4 +65,15 @@ class AuthService {
   }
 
   // delete account
+  Future<void> deleteAccount() async {
+    // get current uid
+    User? user = getCurrentUser();
+    if (user != null) {
+      // delete user's data from firestore
+      await DatabaseService().deleteUserInfoFromFiribase(user.uid);
+
+      // delete the user's auth record
+      await user.delete();
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:app/components/my_settings_tile.dart';
+import 'package:app/helper/navigate_pages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,16 +34,32 @@ class SettingsPage extends StatelessWidget {
             title: "Dark mode",
             action: CupertinoSwitch(
               onChanged: (value) =>
-                  Provider.of<ThemeProvider>(context, listen: false)
-                      .toggleTheme(),
-              value:
-                  Provider.of<ThemeProvider>(context, listen: false).isDarkMode,
+                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme(),
+              value: Provider.of<ThemeProvider>(context, listen: false).isDarkMode,
             ),
           ),
 
-          //Block user
+          //Block user tile
+          MySettingsTile(
+            title: "Blocked Users",
+            action: IconButton(
+              onPressed: () => goBlockedusersPage(context),
+              icon: Icon(
+                Icons.arrow_forward,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
 
           //Account setting
+          MySettingsTile(
+            title: "Account Settings",
+            action: IconButton(
+              onPressed: () => goAccountSettingsPage(context),
+              icon: const Icon(Icons.arrow_forward),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ],
       ),
     );

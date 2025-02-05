@@ -61,7 +61,7 @@ class _PostPageState extends State<PostPage> {
           allComments.isEmpty
               ?
               // no comments yet..
-              Center(
+              const Center(
                   child: Text("No comments yet.."),
                 )
               :

@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unnecessary_brace_in_string_interps
 
 /*
 DATABASE SERVICE
@@ -73,7 +73,7 @@ class DatabaseService {
       print("User info saved to Firestore successfully.");
     } catch (e) {
       print("Error saving user info: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -109,6 +109,46 @@ class DatabaseService {
     }
   }
 
+  // Delete user info
+  Future<void> deleteUserInfoFromFiribase(String uid) async {
+    WriteBatch batch = _db.batch();
+    // delete user doc
+    DocumentReference userDoc = _db.collection("Users").doc(uid);
+    batch.delete(userDoc);
+
+    // delete user posts
+    QuerySnapshot userPosts = await _db.collection("Posts").where('uid', isEqualTo: uid).get();
+
+    for (var post in userPosts.docs) {
+      batch.delete(post.reference);
+    }
+
+    // delete user comments
+    QuerySnapshot userCommnents =
+        await _db.collection("Comments").where('uid', isEqualTo: uid).get();
+    for (var comment in userCommnents.docs) {
+      batch.delete(comment.reference);
+    }
+
+    // delete likes done by this user
+    QuerySnapshot allPosts = await _db.collection("Posts").get();
+    for (QueryDocumentSnapshot post in allPosts.docs) {
+      Map<String, dynamic> postData = post.data() as Map<String, dynamic>;
+      var likeBy = postData['likeBy'] as List<dynamic>? ?? [];
+
+      if (likeBy.contains(uid)) {
+        batch.update(post.reference, {
+          'likeBy': FieldValue.arrayRemove([uid]),
+          'likes': FieldValue.increment(-1),
+        });
+      }
+    }
+
+    // update followers & following records according.. (later)
+
+    // commit batch
+    await batch.commit();
+  }
   /*
   
   POST MESSAGE
@@ -288,8 +328,62 @@ class DatabaseService {
   
   ACCOUNT STUFF
 
+  There are requirements if you wish to publish this to the app store!
   
   */
+
+  // Report post
+  Future<void> reportUserInFirebase(String postId, userId) async {
+    // get current user id
+    final currentUserId = _auth.currentUser!.uid;
+
+    // create a report map
+    final report = {
+      'reportedBy': currentUserId,
+      'messageId': postId,
+      'messageOwnerId': userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    // update in firebase
+    await _db.collection("Reports").add(report);
+  }
+
+  // Block user
+  Future<void> blockUserInFirebase(String userId) async {
+    // get current user id
+    final currentUserId = _auth.currentUser!.uid;
+
+    // add this user to blocked list
+    await _db.collection("Users").doc(currentUserId).collection("BlockedUsers").doc(userId).set({});
+  }
+
+  // Unblock user
+  Future<void> unblockUserInFirebase(String blockedUserId) async {
+    // get current user id
+    final currentUserId = _auth.currentUser!.uid;
+
+    // unblock in firebase
+    await _db
+        .collection("Users")
+        .doc(currentUserId)
+        .collection("BlockedUsers")
+        .doc(blockedUserId)
+        .delete();
+  }
+
+  // Get list of blocked user ids
+  Future<List<String>> getBlockedUidsFromFirebase() async {
+    // get current user id
+    final currentUserId = _auth.currentUser!.uid;
+
+    // get data of blocked users
+    final snapshot =
+        await _db.collection("Users").doc(currentUserId).collection("BlockedUsers").get();
+
+    // return as a list of uids
+    return snapshot.docs.map((doc) => doc.id).toList();
+  }
 
   /*
   

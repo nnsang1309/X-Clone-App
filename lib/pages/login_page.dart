@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 //Welcome back message
                 Text(
-                  "Welcome back, you\'ve been missed!",
+                  "Welcome back, you've been missed!",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 16,

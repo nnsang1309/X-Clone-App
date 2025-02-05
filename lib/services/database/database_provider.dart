@@ -70,8 +70,11 @@ class DatabaseProvider extends ChangeNotifier {
     // fetch all posts from firebase
     final allPosts = await _db.getAllPostFromFirebase();
 
-    // update local data
-    _allPosts = allPosts;
+    // get bloked user ids
+    final blockedUserIds = await _db.getBlockedUidsFromFirebase();
+
+    // filter out bloked users posts & update locally
+    _allPosts = allPosts.where((post) => !blockedUserIds.contains(post.uid)).toList();
 
     // initalize local like data
     initalizeLikeMap();
@@ -230,5 +233,65 @@ class DatabaseProvider extends ChangeNotifier {
 
     // reload comments
     await loadComments(postId);
+  }
+
+  /* 
+
+  ACCOUNT STUFF
+
+  */
+
+  // local list of blocked users
+  List<UserProfile> _blockedUsers = [];
+
+  // get list of blocked users
+  List<UserProfile> get blockedUsers => _blockedUsers;
+
+  // fetch blocked users
+  Future<void> loadBlockedUsers() async {
+    // get list of blocked user ids
+    final blockedUserIds = await _db.getBlockedUidsFromFirebase();
+
+    // get full user details using uid
+    final blockedUsersData =
+        await Future.wait(blockedUserIds.map((id) => _db.getUserFromFirebase(id)));
+
+    // return as a list
+    _blockedUsers = blockedUsersData.whereType<UserProfile>().toList();
+
+    // update Ui
+    notifyListeners();
+  }
+
+  // block user
+  Future<void> blockUser(String userId) async {
+    // perform block in Firebase
+    await _db.blockUserInFirebase(userId);
+
+    // reload blocked users
+    await loadBlockedUsers();
+
+    // update Ui
+    notifyListeners();
+  }
+
+  // unblock user
+  Future<void> unBlockUser(String blockedUserId) async {
+    // perform unblock in Firebase
+    await _db.unblockUserInFirebase(blockedUserId);
+
+    // reload blocked users
+    await loadBlockedUsers();
+
+    // reload posts
+    await loadAllPosts();
+
+    // update UI
+    notifyListeners();
+  }
+
+  // report user
+  Future<void> reportUser(String postId, userId) async {
+    await _db.reportUserInFirebase(postId, userId);
   }
 }
