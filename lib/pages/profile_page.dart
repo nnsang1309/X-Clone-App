@@ -168,6 +168,10 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text(_isLoading || user == null ? 'Null' : user!.name),
         foregroundColor: Theme.of(context).colorScheme.primary,
+        leading: IconButton(
+          onPressed: () => goHomePage(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
 
       // BODY

@@ -52,9 +52,11 @@ class DatabaseProvider extends ChangeNotifier {
 
   // local list of posts
   List<Post> _allPosts = [];
+  List<Post> _followingPosts = [];
 
   // get posts
   List<Post> get allPosts => _allPosts;
+  List<Post> get followingPosts => _followingPosts;
 
   // post message
   Future<void> postMessage(String message) async {
@@ -76,6 +78,9 @@ class DatabaseProvider extends ChangeNotifier {
     // filter out bloked users posts & update locally
     _allPosts = allPosts.where((post) => !blockedUserIds.contains(post.uid)).toList();
 
+    // filter out the following posts
+    loadFollowingPosts();
+
     // initalize local like data
     initalizeLikeMap();
 
@@ -86,6 +91,21 @@ class DatabaseProvider extends ChangeNotifier {
   // filter and return posts given uid
   List<Post> fillterUserPosts(String uid) {
     return _allPosts.where((post) => post.uid == uid).toList();
+  }
+
+  // load following posts -> posts from users that the current user follows
+  Future<void> loadFollowingPosts() async {
+    // get current uid
+    String currentUid = _auth.getCurrentUid();
+
+    // get list of uids that the current logged in user followers (from firebase)
+    final followingUserIds = await _db.getFollowingUidsFromFirebase(currentUid);
+
+    // filter all posts to be the ones for the following tab
+    _followingPosts = _allPosts.where((post) => followingUserIds.contains(post.uid)).toList();
+
+    // update UI
+    notifyListeners();
   }
 
   // delete post

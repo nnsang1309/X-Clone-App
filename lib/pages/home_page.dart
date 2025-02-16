@@ -11,7 +11,14 @@ import '../models/post.dart';
 /*
   HOME PAGE
 
-  Main page: It displays a list of all posts.
+  This is a main page of this app: It displays a list of all posts.
+
+  --------------------------------------------------------
+
+  We can organise this page using a tab bar to split into:
+
+  - for you page
+  - following page
 
 */
 
@@ -66,25 +73,43 @@ class _HomePageState extends State<HomePage> {
   // BUILD UI
   @override
   Widget build(BuildContext context) {
-    // SCAFFOLD
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      drawer: MyDrawer(),
+    // TAB CONTROLLER
+    return DefaultTabController(
+      length: 2,
 
-      // App Bar
-      appBar: AppBar(
-        title: const Text('H O M E'),
-        foregroundColor: Theme.of(context).colorScheme.primary,
-      ),
+      // SCAFFOLD
+      child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          drawer: MyDrawer(),
 
-      // Floatinh Action Button
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openPostMessageBox,
-        child: const Icon(Icons.add),
-      ),
+          // App Bar
+          appBar: AppBar(
+            title: const Text('H O M E'),
+            foregroundColor: Theme.of(context).colorScheme.primary,
+            bottom: TabBar(
+              dividerColor: Colors.transparent,
+              labelColor: Theme.of(context).colorScheme.inversePrimary,
+              unselectedLabelColor: Theme.of(context).colorScheme.primary,
+              indicatorColor: Theme.of(context).colorScheme.secondary,
+              // Tabs
+              tabs: const [
+                Tab(text: 'For you'),
+                Tab(text: 'Following'),
+              ],
+            ),
+          ),
 
-      // Body: list of all posts
-      body: _buildPostList(listeningProvider.allPosts),
+          // Floatinh Action Button
+          floatingActionButton: FloatingActionButton(
+            onPressed: _openPostMessageBox,
+            child: const Icon(Icons.add),
+          ),
+
+          // Body: list of all posts
+          body: TabBarView(children: [
+            _buildPostList(listeningProvider.allPosts),
+            _buildPostList(listeningProvider.followingPosts),
+          ])),
     );
   }
 

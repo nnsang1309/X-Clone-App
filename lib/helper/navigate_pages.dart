@@ -2,6 +2,7 @@
 
 import 'package:app/pages/account_settings_page.dart';
 import 'package:app/pages/blocked_users_page.dart';
+import 'package:app/pages/home_page.dart';
 import 'package:app/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 
@@ -52,4 +53,15 @@ void goAccountSettingsPage(BuildContext context) {
       builder: (context) => AccountSettingsPage(),
     ),
   );
+}
+
+// go home page (but remove all previous routes, this is good for reload )
+void goHomePage(BuildContext context) {
+  Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomePage(),
+      ),
+      // keep the frist route (auth gate)
+      (route) => route.isFirst);
 }
