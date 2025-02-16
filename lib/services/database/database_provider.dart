@@ -609,4 +609,30 @@ class DatabaseProvider extends ChangeNotifier {
       print(e);
     }
   }
+
+  /*
+    SEARCH USERS
+   */
+
+  // list of search results
+  List<UserProfile> _searchResults = [];
+
+  // get list of search results
+  List<UserProfile> get searchResult => _searchResults;
+
+  // method to search for a user
+  Future<void> searchUsers(String searchTerm) async {
+    try {
+      // search users in firebase
+      final result = await _db.searchUsersInFirebase(searchTerm);
+
+      // update local data
+      _searchResults = result;
+
+      // update UI
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
 }

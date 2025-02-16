@@ -1,5 +1,6 @@
 import 'package:app/components/my_drawer_tile.dart';
 import 'package:app/pages/profile_page.dart';
+import 'package:app/pages/search_page.dart';
 import 'package:app/pages/settings_page.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -80,14 +81,28 @@ class MyDrawer extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ProfilePage(uid: _auth.getCurrentUid()),
+                      builder: (context) => ProfilePage(uid: _auth.getCurrentUid()),
                     ),
                   );
                 },
               ),
 
               //search list title
+              MyDrawerTile(
+                title: "Search",
+                icon: Icons.search,
+                onTap: () {
+                  // pop menu drawer
+                  Navigator.pop(context);
+
+                  //go to search page
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SearchPage(),
+                      ));
+                },
+              ),
 
               //setttings list title
               MyDrawerTile(

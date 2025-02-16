@@ -13,6 +13,7 @@ To use this widget
 */
 
 import 'package:app/components/my_input_alert_box.dart';
+import 'package:app/helper/time_formatter.dart';
 import 'package:app/models/post.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:app/services/database/database_provider.dart';
@@ -403,7 +404,14 @@ class _MyPostTileState extends State<MyPostTile> {
                       ),
                     )
                   ],
-                )
+                ),
+                const Spacer(),
+
+                // timestamp
+                Text(
+                  formatTimestamp(widget.post.timestamp),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                ),
               ],
             ),
           ],
