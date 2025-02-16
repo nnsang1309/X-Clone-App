@@ -290,8 +290,303 @@ class DatabaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // report user
+  // report user & post
   Future<void> reportUser(String postId, userId) async {
     await _db.reportUserInFirebase(postId, userId);
+  }
+
+  /*
+  
+  FOLLOW
+
+  Everything here is done with uids (String)
+
+  ------------------------------------------------------------------
+
+  Each user id has a list of:
+  - followers uid
+  - following uid
+
+  E.g.
+
+  {
+  'uid1': [ list of  uids there are follower / follwing],
+  'uid1': [ list of  uids there are follower / follwing],
+  'uid1': [ list of  uids there are follower / follwing],
+  'uid1': [ list of  uids there are follower / follwing],
+  
+  }
+  */
+
+  // local map
+  final Map<String, List<String>> _followers = {};
+  final Map<String, List<String>> _following = {};
+  final Map<String, int> _followerCount = {};
+  final Map<String, int> _followingCount = {};
+
+  // get counts for followers & following locally: given a uid
+  int getFollowerCount(String uid) => _followerCount[uid] ?? 0;
+  int getFollowingCount(String uid) => _followingCount[uid] ?? 0;
+
+  // load followers
+  Future<void> loadUserFollowers(String uid) async {
+    // get the list of follower uids from firebase
+    final listOffFollowerUids = await _db.getFollowersUidsFromFirebase(uid);
+
+    // update local data
+    _followers[uid] = listOffFollowerUids;
+    _followerCount[uid] = listOffFollowerUids.length;
+
+    // update UI
+    notifyListeners();
+  }
+
+  // load following
+  Future<void> loadUserFollowing(String uid) async {
+    // get the list of following uids from firebase
+    final listOffFollowingUids = await _db.getFollowingUidsFromFirebase(uid);
+
+    // update local data
+    _following[uid] = listOffFollowingUids;
+    _followingCount[uid] = listOffFollowingUids.length;
+
+    // update UI
+    notifyListeners();
+  }
+
+  // follow user
+  Future<void> followUser(String targetUserId) async {
+    /*
+
+  currently logged in user wants to follow target user
+  
+  */
+
+    // get current uid
+    final currentUserId = _auth.getCurrentUid();
+
+    // initialize with empty lists if null
+    _following.putIfAbsent(currentUserId, () => []);
+    _followers.putIfAbsent((targetUserId), () => []);
+
+    /*
+
+  Optimistic UI changes: Update the local data & revert back if database request fails
+
+  */
+
+    // follow if current user is not one of the target user's followers
+    if (!_followers[targetUserId]!.contains(currentUserId)) {
+      // add currnent user to target user's follower list
+      _followers[targetUserId]?.add(currentUserId);
+
+      // update follower count
+      _followerCount[targetUserId] = (_followerCount[targetUserId] ?? 0) + 1;
+
+      // then add target user to current user following
+      _following[currentUserId]?.add(targetUserId);
+
+      // update following count
+      _followingCount[currentUserId] = (_followingCount[currentUserId] ?? 0) + 1;
+    }
+
+    // update UI
+    notifyListeners();
+
+    /*
+
+    UI has been optimistically updated above with local data.
+    Now let's try to make this request to our database.
+
+     */
+
+    try {
+      // follow user in firebase
+      await _db.followUserInFirebase(targetUserId);
+
+      // reload current user's followers
+      await loadUserFollowers(currentUserId);
+
+      // reload current user's following
+      await loadUserFollowing(currentUserId);
+    }
+    // if there is an error.. revert back to original
+    catch (e) {
+      // remove current user from target user's followers
+      _followers[targetUserId]?.remove(currentUserId);
+
+      // update followers count
+      _followerCount[targetUserId] = (_followerCount[targetUserId] ?? 0) - 1;
+
+      // remove from current user's following
+      _following[currentUserId]?.remove(targetUserId);
+
+      //update following count
+      _followingCount[targetUserId] = (_followingCount[currentUserId] ?? 0) - 1;
+
+      // update UI
+      notifyListeners();
+    }
+  }
+
+  // unfollow user
+  Future<void> unfollowUser(String targetUserId) async {
+    /*
+    currently logged in user wants to unfollow target user
+    */
+
+    // get current uid
+    final currentUserId = _auth.getCurrentUid();
+
+    // initialize lists if they dont exist
+    _following.putIfAbsent(currentUserId, () => []);
+    _followers.putIfAbsent(targetUserId, () => []);
+
+    /*
+
+    Optimistic UI change: Update the local data first & revert back id the database request fails.
+    
+     */
+
+    // unfollow if current user is none of the target user's following
+    if (_followers[targetUserId]!.contains(currentUserId)) {
+      // remove current user from target user's following
+      _followers[targetUserId]?.remove(currentUserId);
+
+      // update follower count
+      _followerCount[targetUserId] = (_followerCount[targetUserId] ?? 1) - 1;
+
+      // remove target user from current user's following list
+      _following[currentUserId]?.remove(targetUserId);
+
+      // update follwing count
+      _followingCount[currentUserId] = (_followingCount[currentUserId] ?? 1) - 1;
+    }
+
+    // update UI
+    notifyListeners();
+
+    /*
+    
+    UI has been optimistically udpated with local data above.
+    Now let's try to make this request to our database.
+    
+     */
+
+    try {
+      // unfollow target user in firebase
+      await _db.unFollowUserInFirebase(targetUserId);
+
+      // reload user followers
+      await loadUserFollowers(currentUserId);
+
+      // reload user following
+      await loadUserFollowing(currentUserId);
+    }
+    // if there is an error.. revert back to original
+    catch (e) {
+      // add current user back into target user's followers
+      _followers[targetUserId]?.add(currentUserId);
+
+      // update follower count
+      _followerCount[targetUserId] = (_followerCount[targetUserId] ?? 0) + 1;
+
+      // add target user back into current user's following list
+      _following[currentUserId]?.add(targetUserId);
+
+      // update following count
+      _followingCount[currentUserId] = (_followingCount[currentUserId] ?? 0) + 1;
+
+      // update UI
+      notifyListeners();
+    }
+  }
+
+  // is current user following target user?
+  bool isFollowing(String uid) {
+    final currentUserId = _auth.getCurrentUid();
+
+    return _followers[uid]?.contains(currentUserId) ?? false;
+  }
+
+  /*
+  MAP OF PROFILES
+
+  for a given uid:
+
+  - list of followers profiles
+  - list of following profiles
+
+   */
+
+  final Map<String, List<UserProfile>> _followersProfile = {};
+  final Map<String, List<UserProfile>> _followingProfile = {};
+
+  // get list of followers profiles for a given user
+  List<UserProfile> getListOfFollowersProfile(String uid) => _followersProfile[uid] ?? [];
+
+  // get list of following profiles for a given user
+  List<UserProfile> getListOfFollowingProfile(String uid) => _followingProfile[uid] ?? [];
+
+  // load follower profiles for a given uid
+  Future<void> loadUserFollowersProfiles(String uid) async {
+    try {
+      // get list of followers uids from firebase
+      final followersIds = await _db.getFollowersUidsFromFirebase(uid);
+
+      // create list of user profiles
+      List<UserProfile> followerProfiles = [];
+
+      // go thru each followers id
+      for (String followerId in followersIds) {
+        // get user profile from firebase with this uid
+        UserProfile? followerProfile = await _db.getUserFromFirebase(followerId);
+
+        // add to followers profile
+        if (followerProfile != null) {
+          followerProfiles.add(followerProfile);
+        }
+      }
+
+      // update local data
+      _followersProfile[uid] = followerProfiles;
+
+      // update UI
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // load following profiles for a given uid
+  Future<void> loadUserFollowingProfiles(String uid) async {
+    try {
+      // get list of followers uids from firebase
+      final followingIds = await _db.getFollowingUidsFromFirebase(uid);
+
+      // create list of user profiles
+      List<UserProfile> followingProfiles = [];
+
+      // go thru each following id
+      for (String followingId in followingIds) {
+        // get user profile from firebase with this uid
+        UserProfile? followingProfile = await _db.getUserFromFirebase(followingId);
+
+        // add to following profile
+        if (followingProfile != null) {
+          followingProfiles.add(followingProfile);
+        }
+      }
+
+      // update local data
+      _followingProfile[uid] = followingProfiles;
+
+      // update UI
+      notifyListeners();
+    }
+    // if there are errors..
+    catch (e) {
+      print(e);
+    }
   }
 }
