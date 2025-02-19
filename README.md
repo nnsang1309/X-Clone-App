@@ -1,16 +1,37 @@
-# app
-
-A new Flutter project.
-
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Requirements
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter 3.27.3
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Dart 3.6.1
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- CocoaPods: 1.16.2
+
+
+### Install
+Cài đặt Firebase CLI
+
+```npm i -g firebase-tools```
+
+Đăng nhập Firebase
+
+```firebase login```
+
+
+Cài đặt FlutterFire CLI 
+
+```flutter pub global activate flutterfire_cli```
+
+Thiết lập Firebase cho dự án Flutter
+
+```flutterfire configure```
+
+Cài đặt Firebase Packages
+
+```flutter pub add firebase_auth:5.3.3```
+
+```flutter pub add firebase_core:3.8.0```
+
+Bật Authentication trên Firebase Console.
+Vào Firebase Console -> Chọn dự án của bạnn -> Authentication -> Sign-in method -> Bật Email/Password
