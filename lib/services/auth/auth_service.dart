@@ -38,7 +38,7 @@ class AuthService {
 
     // catch any errors...
     on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
+      throw Exception(e.message);
     }
   }
 

@@ -7,6 +7,7 @@
   - You can unblock user here
  */
 
+import 'package:app/helper/toast_message.dart';
 import 'package:app/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,8 +65,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
 
               // let user know it was successfully reported
               if (context.mounted) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("User unblocked!")));
+                ToastMessage().showToast("User unblocked!", ToastType.success);
               }
             },
             child: const Text("Unblock"),

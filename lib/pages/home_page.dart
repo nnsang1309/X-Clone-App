@@ -2,6 +2,7 @@ import 'package:app/components/my_drawer.dart';
 import 'package:app/components/my_input_alert_box.dart';
 import 'package:app/components/my_post_tile.dart';
 import 'package:app/helper/navigate_pages.dart';
+import 'package:app/helper/toast_message.dart';
 import 'package:app/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +59,10 @@ class _HomePageState extends State<HomePage> {
           textController: _messageControler,
           hintText: "Content Post",
           onPressed: () async {
+            if (_messageControler.text.isEmpty) {
+              ToastMessage().showToast('The content is not empty', ToastType.failed);
+              return;
+            }
             //post in db
             await postMassage(_messageControler.text);
           },

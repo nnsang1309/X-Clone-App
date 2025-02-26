@@ -1,6 +1,7 @@
 import 'package:app/components/my_button.dart';
 import 'package:app/components/my_loading_circle.dart';
 import 'package:app/components/my_text_field.dart';
+import 'package:app/helper/toast_message.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,10 @@ class _LoginPageState extends State<LoginPage> {
 
   // logged method
   void login() async {
+    if (emailController.text.isEmpty || pwController.text.isEmpty) {
+      ToastMessage().showToast('Please enter full information', ToastType.failed);
+      return;
+    }
     // show loading circle
     showLoadingCircle(context);
 
@@ -51,21 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     catch (e) {
       // finished loading...
       if (mounted) hideLoadingCircle(context);
-
-      // let user know there was an error
-      // showDialog(
-      //   context: context,
-      //   builder: (context) => AlertDialog(
-      //     title: Text(e.toString()),
-      //   ),
-      // );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Có lỗi xảy ra!'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      ToastMessage().showToast(e.toString(), ToastType.failed);
     }
   }
 

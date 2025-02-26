@@ -14,6 +14,7 @@ To use this widget
 
 import 'package:app/components/my_input_alert_box.dart';
 import 'package:app/helper/time_formatter.dart';
+import 'package:app/helper/toast_message.dart';
 import 'package:app/models/post.dart';
 import 'package:app/services/auth/auth_service.dart';
 import 'package:app/services/database/database_provider.dart';
@@ -82,6 +83,10 @@ class _MyPostTileState extends State<MyPostTile> {
         textController: _commentController,
         hintText: "Type a comment..",
         onPressed: () async {
+          if (_commentController.text.isEmpty) {
+            ToastMessage().showToast("The comment is not empty", ToastType.failed);
+            return;
+          }
           // add comment to database
           await _addComment();
         },
@@ -216,8 +221,7 @@ class _MyPostTileState extends State<MyPostTile> {
 
               // let user know it was successfully reported
               if (context.mounted) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("Message reported")));
+                ToastMessage().showToast("Message reported", ToastType.success);
               }
             },
             child: const Text("Report"),
@@ -254,8 +258,7 @@ class _MyPostTileState extends State<MyPostTile> {
 
               // let user know user was successfully block
               if (context.mounted) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("User blocked!")));
+                ToastMessage().showToast("User blocked!", ToastType.success);
               }
             },
             child: const Text("Block"),
