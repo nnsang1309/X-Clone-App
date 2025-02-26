@@ -39,7 +39,7 @@ void goBlockedusersPage(BuildContext context) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => BlockedUsersPage(),
+      builder: (context) => const BlockedUsersPage(),
     ),
   );
 }
@@ -50,7 +50,7 @@ void goAccountSettingsPage(BuildContext context) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => AccountSettingsPage(),
+      builder: (context) => const AccountSettingsPage(),
     ),
   );
 }
@@ -60,7 +60,7 @@ void goHomePage(BuildContext context) {
   Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => HomePage(),
+        builder: (context) => const HomePage(),
       ),
       // keep the frist route (auth gate)
       (route) => route.isFirst);

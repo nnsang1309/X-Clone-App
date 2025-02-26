@@ -210,11 +210,15 @@ class _MyPostTileState extends State<MyPostTile> {
               await databaseProvider.reportUser(widget.post.id, widget.post.uid);
 
               // close box
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
 
               // let user know it was successfully reported
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text("Message reported")));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("Message reported")));
+              }
             },
             child: const Text("Report"),
           ),
@@ -244,11 +248,15 @@ class _MyPostTileState extends State<MyPostTile> {
               await databaseProvider.blockUser(widget.post.uid);
 
               // close box
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
 
               // let user know user was successfully block
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text("User blocked!")));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("User blocked!")));
+              }
             },
             child: const Text("Block"),
           ),

@@ -166,7 +166,8 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       // APPBAR
       appBar: AppBar(
-        title: Text(_isLoading || user == null ? 'Null' : user!.name),
+        centerTitle: true,
+        title: Text(_isLoading || user == null ? '' : user!.name),
         foregroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () => goHomePage(context),

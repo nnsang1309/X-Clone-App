@@ -38,11 +38,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               await AuthService().deleteAccount();
 
               // them navigate to initial route (Auth gate -> login/ register page)
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/',
-                (route) => false,
-              );
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/',
+                  (route) => false,
+                );
+              }
             },
             child: const Text("Delete"),
           ),
@@ -58,6 +60,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Account Settings"),
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),

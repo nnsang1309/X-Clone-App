@@ -102,7 +102,6 @@ class _FollowListPageState extends State<FollowListPage> {
             itemBuilder: (context, index) {
               // get each user
               final user = userList[index];
-              print(user.username);
 
               // return as a user list tile
               return MyUserTile(user: user);

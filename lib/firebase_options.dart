@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:24610033903:android:4579f732b2e97ab760cb1a',
     messagingSenderId: '24610033903',
     projectId: 'twitterxclone-f82a1',
-    storageBucket: 'twitterxclone-f82a1.appspot.com',
+    storageBucket: 'twitterxclone-f82a1.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +62,8 @@ class DefaultFirebaseOptions {
     appId: '1:24610033903:ios:a92fb41ecbb37c9e60cb1a',
     messagingSenderId: '24610033903',
     projectId: 'twitterxclone-f82a1',
-    storageBucket: 'twitterxclone-f82a1.appspot.com',
+    storageBucket: 'twitterxclone-f82a1.firebasestorage.app',
     iosBundleId: 'com.example.app',
   );
+
 }

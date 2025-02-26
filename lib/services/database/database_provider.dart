@@ -291,6 +291,9 @@ class DatabaseProvider extends ChangeNotifier {
     // reload blocked users
     await loadBlockedUsers();
 
+    // reload data from firebase
+    await loadAllPosts();
+
     // update Ui
     notifyListeners();
   }

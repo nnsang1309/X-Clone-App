@@ -40,10 +40,20 @@ dependencies:
   firebase_auth: ^5.1.2
   cloud_firestore: ^5.2.0
   intl: ^0.20.2
+  flutter_launcher_icons: ^0.14.3
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo.png"
+  remove_alpha_ios: true
+  # adaptive_icon_background: "#0776F8"
+  adaptive_icon_foreground: assets/logo.png
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

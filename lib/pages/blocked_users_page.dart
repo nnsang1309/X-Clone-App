@@ -28,10 +28,13 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
   void initState() {
     super.initState();
 
-    // load blocked users
-    Future<void> loadBlockedUsers() async {
-      await databaseProvider.loadBlockedUsers();
-    }
+    // load blocked users list
+    loadBlockedUsers();
+  }
+
+  // load blocked users
+  Future<void> loadBlockedUsers() async {
+    await databaseProvider.loadBlockedUsers();
   }
 
   // show confirm unblock box
@@ -55,11 +58,15 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
               await databaseProvider.unBlockUser(userId);
 
               // close box
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
 
               // let user know it was successfully reported
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text("User unblocked!")));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("User unblocked!")));
+              }
             },
             child: const Text("Unblock"),
           ),
@@ -79,6 +86,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
 
       // App Bar
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Blocked Users"),
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),

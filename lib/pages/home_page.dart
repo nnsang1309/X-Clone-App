@@ -84,6 +84,7 @@ class _HomePageState extends State<HomePage> {
 
           // App Bar
           appBar: AppBar(
+            centerTitle: true,
             title: const Text('H O M E'),
             foregroundColor: Theme.of(context).colorScheme.primary,
             bottom: TabBar(

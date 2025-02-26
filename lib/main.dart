@@ -10,7 +10,11 @@ import 'package:app/themes/theme_provider.dart';
 void main() async {
   // firebase setup
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   runApp(
     MultiProvider(

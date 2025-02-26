@@ -59,6 +59,13 @@ class _LoginPageState extends State<LoginPage> {
       //     title: Text(e.toString()),
       //   ),
       // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Có lỗi xảy ra!'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -68,99 +75,102 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       // BODY
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
-                // Logo
-                Icon(
-                  Icons.lock_open_rounded,
-                  size: 72,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 50),
-
-                //Welcome back message
-                Text(
-                  "Welcome back, you've been missed!",
-                  style: TextStyle(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 50),
+                  // Logo
+                  Icon(
+                    Icons.lock_open_rounded,
+                    size: 72,
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 16,
                   ),
-                ),
+                  const SizedBox(height: 50),
 
-                const SizedBox(height: 25),
-
-                // email textfield
-                MyTextField(
-                  controller: emailController,
-                  hintText: "Enter email",
-                  obscureText: false,
-                ),
-
-                const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  controller: pwController,
-                  hintText: "Enter password",
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                //forgot password?
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Forget password?',
+                  //Welcome back message
+                  Text(
+                    "Welcome back, you've been missed!",
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
-                //sign in button
-                MyButton(
-                  text: "Login",
-                  onTap: login,
-                ),
+                  // email textfield
+                  MyTextField(
+                    controller: emailController,
+                    hintText: "Enter email",
+                    obscureText: false,
+                  ),
 
-                const SizedBox(height: 50),
+                  const SizedBox(height: 10),
 
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Not a member?",
+                  // password textfield
+                  MyTextField(
+                    controller: pwController,
+                    hintText: "Enter password",
+                    obscureText: true,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  //forgot password?
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      'Forget password?',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                  ),
 
-                    // User can tap this to go to register
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: Text(
-                        "Register now",
+                  const SizedBox(height: 25),
+
+                  //sign in button
+                  MyButton(
+                    text: "Login",
+                    onTap: login,
+                  ),
+
+                  const SizedBox(height: 50),
+
+                  // not a member? register now
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Not a member?",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 10),
+
+                      // User can tap this to go to register
+                      GestureDetector(
+                        onTap: widget.onTap,
+                        child: Text(
+                          "Register now",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
